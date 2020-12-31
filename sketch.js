@@ -3,6 +3,9 @@ var ocean, oceanIMG,backgroundimage;
 var score;
 var plasticSpritegroup;
 var gamestate = "play";
+var fishIMG;
+var fish;
+var musicSound;
 //var packageBody,ground;
 //var red1, red2, red3;
 const Engine = Matter.Engine;
@@ -17,18 +20,21 @@ function preload()
 	plastic1IMG=loadImage("plasticbottlecrushed.png");
 	plastic2IMG=loadImage("bottle2.png");
 	oceanIMG=loadImage("ocean.jpg");
-	backgroundimage = loadImage("sand.jpg")
+	backgroundimage = loadImage("ocean.jpg");
+	fishIMG = loadImage("fish.png");
+	musicSound = loadSound("My Video.mp4");
+	
 }
 
 function setup() {
-	createCanvas(1300, 400);
+	createCanvas(1300, 600);
 	//rectMode(CENTER);
 	
 	score = 0;
 	ocean=createSprite(650,300,1300,50);//width/2, height-35, width,10);
 	//groundSprite.shapeColor=color(255)
 	ocean.addImage(oceanIMG);
-	ocean.scale = 2;
+	ocean.scale = 1;
 
 
 	plasticSpritegroup = createGroup();
@@ -39,6 +45,7 @@ function setup() {
 	personSprite=createSprite(100, 350, 10,10);
 	personSprite.addImage(personIMG)
 	personSprite.scale=0.2;
+	
 	
 	
 	
@@ -63,22 +70,24 @@ function setup() {
 
 
 function draw() {
-	personSprite.debug = true;
+	musicSound.play();
+	//personSprite.debug = true;
 	personSprite.setCollider("rectangle",0,0,700,500)
 	if (gamestate === "play"){
+		
 	background("white");//backgroundimage);
-
-	if (ocean.x < 0){
+	Fish();
+    
+	if (ocean.x < 50){
 		ocean.x =ocean.width/2;
 	  }
 	
-	
 
 	if (keyDown(UP_ARROW)){
-		personSprite.y = personSprite.y - 2;
+		personSprite.y = personSprite.y - 4;
 	}
 	if (keyDown(DOWN_ARROW)){
-		personSprite.y = personSprite.y+2;
+		personSprite.y = personSprite.y+4;
 	}
 	//personSprite.depth = personSprite.depth+1;
 	
@@ -93,11 +102,22 @@ function draw() {
   //packageSprite.y= packageBody.position.y 
   
   drawSprites();
+  text
+  fill("black")
+  textSize(20);
   text("Score: "+ score, 500,50);
+
   if (personSprite.isTouching(plasticSpritegroup)){
 	plasticSpritegroup.destroyEach();
 	score = score+1;
 	
+
+}
+
+
+if (plasticSpritegroup.isTouching(fish)){
+	fish.destroy();
+	score = score-1;
 }
 }
 if (gamestate === "End"){
@@ -106,7 +126,7 @@ if (gamestate === "End"){
 		plasticSpritegroup.destroyEach();
 		background(0);
 		fill("white");
-		textSize(100);
+		textSize(30);
 		text("Congratulations You Have successfully cleaned the Ocean", 200,200);
 }
 if (score === 20){
@@ -117,7 +137,7 @@ if (score === 20){
 
 
 function plastic(){
-	if (frameCount % 100 === 0){
+	if (frameCount % 70 === 0){
 		plasticSprite=createSprite(700, 380, 10,10);
 	//plasticSprite.addImage(plasticIMG)
 	plasticSprite.scale=0.1
@@ -153,3 +173,14 @@ function plastic(){
 
 }
 
+function Fish(){
+	if (frameCount % 50 === 0){
+	 
+	  fish = createSprite(700,380,10,10);
+	  fish.addImage(fishIMG);
+	  fish.scale = 0.03;
+	  fish.velocityX = -4;
+	  fish.y = Math.round(random(100,500));
+	  fish.velocityX = -7;
+}
+}

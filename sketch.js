@@ -2,20 +2,17 @@ var personIMG, personSprite, plasticSprite,plastic1Sprite,plastic2Sprite,plastic
 var ocean, oceanIMG,backgroundimage;
 var score;
 var plasticSpritegroup;
-var gamestate = "play";
+var gamestate = "start";
 var fishIMG;
 var fish;
 var musicSound;
-//var packageBody,ground;
-//var red1, red2, red3;
-const Engine = Matter.Engine;
-const World = Matter.World;
-const Bodies = Matter.Bodies;
-const Body = Matter.Body;
-
+var fishgroup;
+var bg1;
+var fishDeadImg;
+var boySprite,boyImg;
 function preload()
 {
-	personIMG=loadImage("energetic swimmer.png");
+	personIMG=loadImage("boy1.png");
 	plasticIMG=loadImage("bottle.png");
 	plastic1IMG=loadImage("plasticbottlecrushed.png");
 	plastic2IMG=loadImage("bottle2.png");
@@ -23,11 +20,14 @@ function preload()
 	backgroundimage = loadImage("ocean.jpg");
 	fishIMG = loadImage("fish.png");
 	musicSound = loadSound("My Video.mp4");
-	
+	bg1=loadImage("background1.jpg");
+	fishDeadImg=loadImage("fishDead.png");
+	boyImg=loadImage("boy standing.png");
+
 }
 
 function setup() {
-	createCanvas(1300, 600);
+	createCanvas(1200, 600);
 	//rectMode(CENTER);
 	
 	score = 0;
@@ -38,47 +38,81 @@ function setup() {
 
 
 	plasticSpritegroup = createGroup();
-
+    fishgroup = createGroup();
 	
 	
 
 	personSprite=createSprite(100, 350, 10,10);
 	personSprite.addImage(personIMG)
-	personSprite.scale=0.2;
+	personSprite.scale=0.4;
 	
-	
+		
+	boySprite=createSprite(100, 300, 10,10);
+	boySprite.addImage(boyImg);
+	boySprite.scale=0.8;
 	
 	
 	
 	
 
-	engine = Engine.create();
-	world = engine.world;
-
-	packageBody = Bodies.circle(width/2 , 200 , 5 , {restitution:0.5, isStatic:true});
-	World.add(world, packageBody);
 	
-   // packageSprite.collide(red1);
-	//Create a Ground
-	ground = Bodies.rectangle(width/2, 650, width, 10 , {isStatic:true} );
- 	World.add(world, ground);
-
-
-	Engine.run(engine);
   
 }
 
 
 function draw() {
-	musicSound.play();
-	//personSprite.debug = true;
-	personSprite.setCollider("rectangle",0,0,700,500)
+	plastic();
+	Fish();
+	
+	//musicSound.play();
+	if(gamestate==="start"){
+		boySprite.visible=true;
+		background(bg1);
+
+		console.log(boySprite.x);
+		
+		personIMG.visible=false;
+		oceanIMG.visible=false;
+		textSize(20);
+		fill("black");
+		textFont("Comic Sans MS");
+	text("Hello Friends!",400,350);
+	text("Welcome to my World!",400,380);
+	text("This is similar to the real world which is polluted by humans!",400,410);
+	text("I am on a mission to clean it!",400,440);
+	text("Press Enter to join my mission!",400,480);
+
+	if(keyDown("enter")){
+		gamestate="intro";
+	}
+}
+	if(gamestate==="intro"){
+		boySprite.visible=true;
+		background(bg1);
+
+		
+		personIMG.visible=false;
+		oceanIMG.visible=false;
+		textSize(20);
+		fill("black");
+		textFont("Comic Sans MS");
+	text("Help the swimmer collect plastic trash from the ocean!",400,350);
+	text("Use up and down arrow keys to move the swimmer.",400,390);
+	text("Press space to begin",400,450);
+	if(keyDown("space")){
+		gamestate="play";
+	}
+	
+	}
+	
 	if (gamestate === "play"){
 		
-	background("white");//backgroundimage);
-	Fish();
-    
-	if (ocean.x < 50){
+	background("white");
+	boySprite.visible=false;
+	
+	
+   // console.log(ocean.x);
+	if (ocean.x < 500){
 		ocean.x =ocean.width/2;
 	  }
 	
@@ -89,20 +123,19 @@ function draw() {
 	if (keyDown(DOWN_ARROW)){
 		personSprite.y = personSprite.y+4;
 	}
-	//personSprite.depth = personSprite.depth+1;
+	personSprite.depth = personSprite.depth+1;
 	
-	plastic();
-  rectMode(CENTER);
+	
+  
   
   ocean.velocityX = -(3 + 5* score/10)
   
   
  
- // packageSprite.x= packageBody.position.x 
-  //packageSprite.y= packageBody.position.y 
+ 
   
   drawSprites();
-  text
+
   fill("black")
   textSize(20);
   text("Score: "+ score, 500,50);
@@ -115,9 +148,9 @@ function draw() {
 }
 
 
-if (plasticSpritegroup.isTouching(fish)){
-	fish.destroy();
-	score = score-1;
+if (plasticSpritegroup.isTouching(fishgroup)){
+	fish.changeImage(fishDeadImg);
+	//score = score-1;
 }
 }
 if (gamestate === "End"){
@@ -137,25 +170,17 @@ if (score === 20){
 
 
 function plastic(){
-	if (frameCount % 70 === 0){
-		plasticSprite=createSprite(700, 380, 10,10);
-	//plasticSprite.addImage(plasticIMG)
-	plasticSprite.scale=0.1
-	plasticSpritegroup.add(plasticSprite);
-    plasticSprite.y = Math.round(random(100,500));
-	
-	//plastic1Sprite=createSprite(700,380, 10,10);
-	//plastic1Sprite.addImage(plastic1IMG)
-	//plastic1Sprite.scale=0.4
-
-//	plastic2Sprite=createSprite(1300, 350, 10,10);
-	//plastic2Sprite.addImage(plastic2IMG)
-	//plastic2Sprite.scale=0.1;
-		plasticSprite.velocityX = -6
-		//plastic1Sprite.velocityX = -6
-		//plastic2Sprite.velocityX = -6
+	if (frameCount % 100 === 0){
 		
-		 //generate random obstacles
+		plasticSprite=createSprite(900, 100, 10,10);
+	plasticSprite.velocityX = 3;
+	plasticSprite.scale=0.1
+	
+    plasticSprite.y = Math.round(random(200,500));
+	
+
+		plasticSprite.velocityX = -4;
+
 		 var rand = Math.round(random(1,3));
 		 switch(rand) {
 		   case 1: plasticSprite.addImage(plasticIMG);
@@ -169,18 +194,19 @@ function plastic(){
 				   default:break;
 		   
 }
+plasticSpritegroup.add(plasticSprite);
 	}
 
 }
 
 function Fish(){
-	if (frameCount % 50 === 0){
-	 
-	  fish = createSprite(700,380,10,10);
+	if (frameCount % 100 === 0){
+	
+	  fish = createSprite(50,50,10,10);
 	  fish.addImage(fishIMG);
-	  fish.scale = 0.03;
-	  fish.velocityX = -4;
+	  fish.scale = 0.2;
+	  fish.velocityX =2;
 	  fish.y = Math.round(random(100,500));
-	  fish.velocityX = -7;
+	  fishgroup.add(fish);
 }
 }

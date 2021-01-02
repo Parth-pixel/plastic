@@ -10,6 +10,9 @@ var fishgroup;
 var bg1;
 var fishDeadImg;
 var boySprite,boyImg;
+var endIMG;
+var personSpritegroup;
+
 function preload()
 {
 	personIMG=loadImage("boy1.png");
@@ -19,14 +22,18 @@ function preload()
 	oceanIMG=loadImage("ocean.jpg");
 	backgroundimage = loadImage("ocean.jpg");
 	fishIMG = loadImage("fish.png");
-	musicSound = loadSound("My Video.mp4");
+	musicSound = loadSound("sound.mp3");
 	bg1=loadImage("background1.jpg");
 	fishDeadImg=loadImage("fishDead.png");
 	boyImg=loadImage("boy standing.png");
+	endIMG = loadImage("clean ocean.jpg");
 
 }
 
 function setup() {
+	boySprite=createSprite(100, 300, 10,10);
+	boySprite.addImage(boyImg);
+	boySprite.scale=0.8;
 	createCanvas(1200, 600);
 	//rectMode(CENTER);
 	
@@ -45,11 +52,12 @@ function setup() {
 	personSprite=createSprite(100, 350, 10,10);
 	personSprite.addImage(personIMG)
 	personSprite.scale=0.4;
+	personSprite.debug=false;
+	personSprite.setCollider("rectangle",0,0,400,250);
 	
+	//personSprite.velocityX = 4;
 		
-	boySprite=createSprite(100, 300, 10,10);
-	boySprite.addImage(boyImg);
-	boySprite.scale=0.8;
+	
 	
 	
 	
@@ -63,12 +71,32 @@ function setup() {
 function draw() {
 	plastic();
 	Fish();
+	if(gamestate==="intro"){
+		boySprite.visible=true;
+		background(bg1);
+		
+		
+		personIMG.visible=false;
+		oceanIMG.visible=false;
+		textSize(20);
+		fill("black");
+		textFont("Comic Sans MS");
+	text("Water Pollution Is a Major Concern Marine Life Is Getting Destroyed.",300,250);
+	text("So, Let us Play And Clean The Trash Before the Fishes eat It And Die.",330,280);
+	text("If You Clean The Trash plus 1 Point.",360,310);
+	text("Use up and down arrow keys to move the swimmer.", 360,350);
+	text("Press space to begin.",390,380);
+	if(keyDown("space")){
+		gamestate="play";
+	}
 	
-	//musicSound.play();
+	}
+	musicSound.play();
 	if(gamestate==="start"){
 		boySprite.visible=true;
 		background(bg1);
-
+		
+		
 		console.log(boySprite.x);
 		
 		personIMG.visible=false;
@@ -76,34 +104,18 @@ function draw() {
 		textSize(20);
 		fill("black");
 		textFont("Comic Sans MS");
-	text("Hello Friends!",400,350);
-	text("Welcome to my World!",400,380);
-	text("This is similar to the real world which is polluted by humans!",400,410);
-	text("I am on a mission to clean it!",400,440);
-	text("Press Enter to join my mission!",400,480);
+	text("Hello Friends!",400,250);
+	text("Welcome to my World!",400,280);
+	text("This is similar to the real world which is polluted by humans!",400,310);
+	text("I am on a mission to clean it!",400,340);
+	text("Press Enter to join my mission!",400,380);
 
 	if(keyDown("enter")){
 		gamestate="intro";
 	}
-}
-	if(gamestate==="intro"){
-		boySprite.visible=true;
-		background(bg1);
-
-		
-		personIMG.visible=false;
-		oceanIMG.visible=false;
-		textSize(20);
-		fill("black");
-		textFont("Comic Sans MS");
-	text("Help the swimmer collect plastic trash from the ocean!",400,350);
-	text("Use up and down arrow keys to move the swimmer.",400,390);
-	text("Press space to begin",400,450);
-	if(keyDown("space")){
-		gamestate="play";
-	}
 	
-	}
+}
+	
 	
 	if (gamestate === "play"){
 		
@@ -123,6 +135,14 @@ function draw() {
 	if (keyDown(DOWN_ARROW)){
 		personSprite.y = personSprite.y+4;
 	}
+
+	//if (keyDown(LEFT_ARROW)){
+	//	personSprite.x = personSprite.x - 3;
+	//}
+
+	//if (keyDown(RIGHT_ARROW)){
+	//	personSprite.x = personSprite.x + 3;
+	//}
 	personSprite.depth = personSprite.depth+1;
 	
 	
@@ -138,33 +158,51 @@ function draw() {
 
   fill("black")
   textSize(20);
+  textFont("Comic Sans MS");
   text("Score: "+ score, 500,50);
 
-  if (personSprite.isTouching(plasticSpritegroup)){
-	plasticSpritegroup.destroyEach();
+  for(var i=0;i<plasticSpritegroup.length;i++){
+  if (plasticSpritegroup.get(i).isTouching(personSprite)){
+
+	plasticSpritegroup.get(i).destroy();
 	score = score+1;
 	
-
+  }
 }
 
 
-if (plasticSpritegroup.isTouching(fishgroup)){
-	fish.changeImage(fishDeadImg);
-	//score = score-1;
-}
+for(var i=0;i<fishgroup.length;i++){
+	if (fishgroup.get(i).isTouching(plasticSpritegroup)){
+  
+		fishgroup.get(i).addImage(fishDeadImg);
+	
+		
+				
+	  
+	}
+  }
 }
 if (gamestate === "End"){
+	    
+		background(oceanIMG);
+		
+		endIMG.scale = 0.5;
 	    ocean.velocityX = 0;
 		plasticSpritegroup.velocityX = 0;
 		plasticSpritegroup.destroyEach();
-		background(0);
-		fill("white");
-		textSize(30);
-		text("Congratulations You Have successfully cleaned the Ocean", 200,200);
+		//background(0);
+		fill("Fluorescent Green");
+		textSize(35);
+		textFont("Comic Sans MS");
+		text("Congratulations! You Have successfully cleaned the Ocean", 200,200);
+		text("Hope You Keep It This Way In Real Life Also",250,250);
+		
 }
 if (score === 20){
+	//endIMG.scale = 0.2;
 	gamestate = "End";
 }
+
 }
 
 
@@ -172,14 +210,15 @@ if (score === 20){
 function plastic(){
 	if (frameCount % 100 === 0){
 		
-		plasticSprite=createSprite(900, 100, 10,10);
-	plasticSprite.velocityX = 3;
+		plasticSprite=createSprite(1100, 100, 10,10);
+		plastic.debug=true;
+	plasticSprite.velocityX = -(7+3*score/10);
 	plasticSprite.scale=0.1
 	
-    plasticSprite.y = Math.round(random(200,500));
+    plasticSprite.y = Math.round(random(100,550));
 	
 
-		plasticSprite.velocityX = -4;
+		plasticSprite.velocityX = -10;
 
 		 var rand = Math.round(random(1,3));
 		 switch(rand) {
@@ -200,11 +239,13 @@ plasticSpritegroup.add(plasticSprite);
 }
 
 function Fish(){
-	if (frameCount % 100 === 0){
+	if (frameCount % 250 === 0){
 	
 	  fish = createSprite(50,50,10,10);
+	  fish.debug=false;
+	  fish.setCollider("rectangle",0,0,500,200);
 	  fish.addImage(fishIMG);
-	  fish.scale = 0.2;
+	  fish.scale = 0.15;
 	  fish.velocityX =2;
 	  fish.y = Math.round(random(100,500));
 	  fishgroup.add(fish);

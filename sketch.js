@@ -26,7 +26,7 @@ function preload()
 	bg1=loadImage("background1.jpg");
 	fishDeadImg=loadImage("fishDead.png");
 	boyImg=loadImage("boy standing.png");
-	endIMG = loadImage("clean ocean.jpg");
+	//endIMG = loadImage("clean ocean.jpg");
 
 }
 
@@ -186,7 +186,7 @@ if (gamestate === "End"){
 	    
 		background(oceanIMG);
 		
-		endIMG.scale = 0.5;
+		//endIMG.scale = 0.5;
 	    ocean.velocityX = 0;
 		plasticSpritegroup.velocityX = 0;
 		plasticSpritegroup.destroyEach();
